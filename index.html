@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta name="google-site-verification" content="sLFFIMINtDswHPB6fE68ByjiMDQ12gTGfmwBA4ancu8" />
+    <meta name="naver-site-verification" content="7faedd8349d9509f9c5ebe894f115ed33b071746" />
+    <meta charset="UTF-8">
+    <meta name="description" content="Fire Birds Game">
+    <meta name="keywords" content="Fire, Birds, Game">
+    <meta name="author" content="jsh">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="http://firebirds.ga/">    
+    <title>Fire Birds</title>
+    <style>
+        body {
+            font-size: 20pt;
+            color: yellowgreen;
+        }
+
+        canvas {
+            border: 2px dotted black;
+            background-color: white;
+        }
+
+        button,
+        input {
+            margin: 5px;
+            padding: 0;
+            color: yellowgreen;
+            font-size: 20pt;
+            text-align: center;
+            min-width: 120px;
+            border: 1px solid yellowgreen;
+        }
+    </style>
+
+    <script>
+        const width = 820;
+        const height = 344;
+
+        var context;
+        var velocity;
+        var angle;
+        var ballV;
+        var ballVx;
+        var ballVy;
+        var ballX;
+        var ballY;
+        var ballRadius = 10;
+        var score = 0;
+        var timer;
+
+        var imgBackground = new Image();
+        imgBackground.src = "res/images/bg.png";
+
+        var imgPig = new Image();
+        imgPig.src = "res/images/pig.png";
+
+        var imgBird = new Image();
+        imgBird.src = "res/images/bird_half.png";
+
+        function drawBall() {
+            context.beginPath();
+            context.arc(ballX, ballY, ballRadius, 0, 2.0 * Math.PI, true);
+            context.fillStyle = "orangeRed";
+            context.fill();
+        }
+
+        function drawBackground() {
+            context.drawImage(imgBackground, 0, 0)
+            context.drawImage(imgPig, 620, 187)
+            context.drawImage(imgBird, 0, 295)
+        }
+
+        function draw() {
+            context.clearRect(0, 0, width, height);
+
+            drawBackground();
+
+            drawBall();
+        }
+
+        function init() {
+            ballX = 50;
+
+            ballY = height - 49;
+
+            ballRadius = 10;
+
+            context = document
+                .getElementById('canvas')
+                .getContext('2d');
+
+            draw();
+        }
+
+        function start() {
+            init();
+
+            velocity = Number(document.getElementById('velocity').value);
+            angle = Number(document.getElementById('angle').value);
+            var angleR = angle * Math.PI / 180;
+
+            ballVx = velocity * Math.cos(angleR);
+            ballVy = -velocity * Math.sin(angleR);
+
+            draw();
+
+            timer = setInterval(calculate, 100);
+
+            return false;
+        }
+
+        function calculate() {
+            ballX = ballX + ballVx;
+
+            ballVy = ballVy + 1.98;
+
+            ballY = ballY + ballVy;
+
+            if ((ballX >= width - 200) && (ballX <= width) && (ballY >= height - 157) && (ballY <= height)) {
+                score++;
+                document
+                    .getElementById("score")
+                    .innerHTML = "Score : " + score;
+                clearInterval(timer);
+            }
+
+            if (ballY >= height || ballY < 0) {
+                clearInterval(timer);
+            }
+
+            draw();
+        }
+    </script>
+</head>
+
+<body onload="init()">
+    <div style="text-align: center;">
+        <div id="score" style="font-size: 32pt; color:yellowgreen; font-weight:bold; margin:10px;">Score : 0</div>
+        <canvas id="canvas" width="820" height="344"></canvas>
+        <div id="control">
+            Velocity<input id="velocity" value="30" type="number" min="0" max="100" step="1" />
+            Angle<input id="angle" value="45" type="number" min="0" max="90" step="1" />
+            <button onclick="start()">발사</button>
+        </div>
+    </div>
+</body>
+
+</html>
